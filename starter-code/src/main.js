@@ -29,50 +29,27 @@ $(document).ready(function() {
   // Create Memory Game
   var memoryGame = new MemoryGame(cards);
   // Add cards to Game
-  function addCardsToDom() {
-    var html = "";
-
-    memoryGame.cards.forEach(function(pic, index) {
-      html += '<div class= "card" data-name="card_' + pic.name + '">';
-      html += '<div class="back"';
-      html += '    name="' + pic.img + '">';
-      html += "</div>";
-      html += '<div class="front" ';
-      html += 'style="background: url(img/' + pic.img + ') no-repeat">';
-      html += "</div>";
-      html += "</div>";
-    });
-
-    // Add all the div's to the HTML
-    document.getElementById("memory_board").innerHTML = html;
-
-    // Bind the click event of each faced down card to a function
-    $(".back").on("click", function() {
-      var card = $(this).parent();
-      memoryGame.selectCard(card.attr("data-name"));
-      turnCard(card);
-      updateScore();
-      if (memoryGame.isMoveFinished() && !memoryGame.isPair()) {
-        document.addEventListener("click", preventClicks, true);
-        setTimeout(function() {
-          document.removeEventListener("click", preventClicks, true);
-          turnCardsBack();
-        }, 1000);
-      }
-      if (memoryGame.isWon()) {
-        onWin();
-      }
-    });
-  }
-
-  function removeCardsFromDom() {
-    $("#memory_board")
-      .children()
-      .remove();
-  }
 
   addCardsToDom();
+
   // -------- User Interface setup done! --------------
+
+  function onCardClick(backCard) {
+    var card = backCard.parent();
+    memoryGame.selectCard(card.attr("data-name"));
+    turnCard(card);
+    updateScore();
+    if (memoryGame.isMoveFinished() && !memoryGame.isPair()) {
+      document.addEventListener("click", preventClicks, true);
+      setTimeout(function() {
+        document.removeEventListener("click", preventClicks, true);
+        turnCardsBack();
+      }, 1000);
+    }
+    if (memoryGame.isWon()) {
+      onWin();
+    }
+  }
 
   function turnCard(jQueryCardElement) {
     jQueryCardElement.children().toggleClass("front back");
@@ -97,13 +74,6 @@ $(document).ready(function() {
     });
   }
 
-  function setupNewGame() {
-    memoryGame = new MemoryGame(cards);
-    removeCardsFromDom();
-    addCardsToDom();
-    updateScore();
-  }
-
   function turnFaceDown(jQueryCardElement) {
     jQueryCardElement
       .children()
@@ -125,5 +95,43 @@ $(document).ready(function() {
           turnFaceDown($(this));
         }
       });
+  }
+
+  function setupNewGame() {
+    memoryGame = new MemoryGame(cards);
+    removeCardsFromDom();
+    addCardsToDom();
+    updateScore();
+  }
+
+  /////// functions to setup user interface! //////
+
+  function addCardsToDom() {
+    var html = "";
+
+    memoryGame.cards.forEach(function(pic, index) {
+      html += '<div class= "card" data-name="card_' + pic.name + '">';
+      html += '<div class="back"';
+      html += '    name="' + pic.img + '">';
+      html += "</div>";
+      html += '<div class="front" ';
+      html += 'style="background: url(img/' + pic.img + ') no-repeat">';
+      html += "</div>";
+      html += "</div>";
+    });
+
+    // Add all the div's to the HTML
+    document.getElementById("memory_board").innerHTML = html;
+
+    // Bind the click event of each faced down card to a function
+    $(".back").on("click", function() {
+      onCardClick($(this));
+    });
+  }
+
+  function removeCardsFromDom() {
+    $("#memory_board")
+      .children()
+      .remove();
   }
 });
