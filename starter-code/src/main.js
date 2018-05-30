@@ -28,40 +28,51 @@ var cards = [
 $(document).ready(function() {
   // Create Memory Game
   var memoryGame = new MemoryGame(cards);
-  var html = "";
   // Add cards to Game
-  memoryGame.cards.forEach(function(pic, index) {
-    html += '<div class= "card" data-name="card_' + pic.name + '">';
-    html += '<div class="back"';
-    html += '    name="' + pic.img + '">';
-    html += "</div>";
-    html += '<div class="front" ';
-    html += 'style="background: url(img/' + pic.img + ') no-repeat">';
-    html += "</div>";
-    html += "</div>";
-  });
+  function addCardsToDom() {
+    var html = "";
 
-  // Add all the div's to the HTML
-  document.getElementById("memory_board").innerHTML = html;
+    memoryGame.cards.forEach(function(pic, index) {
+      html += '<div class= "card" data-name="card_' + pic.name + '">';
+      html += '<div class="back"';
+      html += '    name="' + pic.img + '">';
+      html += "</div>";
+      html += '<div class="front" ';
+      html += 'style="background: url(img/' + pic.img + ') no-repeat">';
+      html += "</div>";
+      html += "</div>";
+    });
 
+    // Add all the div's to the HTML
+    document.getElementById("memory_board").innerHTML = html;
+
+    // Bind the click event of each faced down card to a function
+    $(".back").on("click", function() {
+      var card = $(this).parent();
+      memoryGame.selectCard(card.attr("data-name"));
+      turnCard(card);
+      updateScore();
+      if (memoryGame.isMoveFinished() && !memoryGame.isPair()) {
+        document.addEventListener("click", preventClicks, true);
+        setTimeout(function() {
+          document.removeEventListener("click", preventClicks, true);
+          turnCardsBack();
+        }, 1000);
+      }
+      if (memoryGame.isWon()) {
+        onWin();
+      }
+    });
+  }
+
+  function removeCardsFromDom() {
+    $("#memory_board")
+      .children()
+      .remove();
+  }
+
+  addCardsToDom();
   // -------- User Interface setup done! --------------
-  // Bind the click event of each faced down card to a function
-  $(".back").on("click", function() {
-    var card = $(this).parent();
-    memoryGame.selectCard(card.attr("data-name"));
-    turnCard(card);
-    updateScore();
-    if (memoryGame.isMoveFinished() && !memoryGame.isPair()) {
-      document.addEventListener("click", preventClicks, true);
-      setTimeout(function() {
-        document.removeEventListener("click", preventClicks, true);
-        turnCardsBack();
-      }, 1000);
-    }
-    if (memoryGame.isWon()) {
-      onWin();
-    }
-  });
 
   function turnCard(jQueryCardElement) {
     jQueryCardElement.children().toggleClass("front back");
@@ -81,14 +92,15 @@ $(document).ready(function() {
     $("#text-won").text(memoryGame.movesCount);
     $("#overlay-win").fadeIn("slow");
     $("#new-game-btn").on("click", function() {
-      memoryGame = new MemoryGame(cards);
-      setupNewGame();
       $("#overlay-win").fadeOut("slow");
+      setupNewGame();
     });
   }
 
   function setupNewGame() {
-    turnCardsBack();
+    memoryGame = new MemoryGame(cards);
+    removeCardsFromDom();
+    addCardsToDom();
     updateScore();
   }
 

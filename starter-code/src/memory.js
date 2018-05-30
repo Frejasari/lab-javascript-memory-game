@@ -1,4 +1,5 @@
 var MemoryGame = function(cards) {
+  this.cards = this.shuffleCards(cards);
   this.pickedCards = [];
   this.guessedCards = [];
   this.movesCount = 0;
