@@ -1,12 +1,11 @@
 var MemoryGame = function(cards) {
-  this.cards = cards;
   this.pickedCards = [];
   this.guessedCards = [];
   this.movesCount = 0;
   this.guessedPairsCount = 0;
 };
 
-MemoryGame.prototype.shuffleCard = function(cardsArr) {
+MemoryGame.prototype.shuffleCards = function(cardsArr) {
   for (var i = cardsArr.length - 1; i > 0; i--) {
     var randomIndex = Math.floor(Math.random() * i);
     cardsArr.swap(i, randomIndex);

@@ -50,7 +50,7 @@ $(document).ready(function() {
     var card = $(this).parent();
     memoryGame.selectCard(card.attr("data-name"));
     turnCard(card);
-    updateText();
+    updateScore();
     if (memoryGame.isMoveFinished() && !memoryGame.isPair()) {
       document.addEventListener("click", preventClicks, true);
       setTimeout(function() {
@@ -64,11 +64,10 @@ $(document).ready(function() {
   });
 
   function turnCard(jQueryCardElement) {
-    jQueryCardElement.children().toggleClass("front");
-    jQueryCardElement.children().toggleClass("back");
+    jQueryCardElement.children().toggleClass("front back");
   }
 
-  function updateText() {
+  function updateScore() {
     $("#pairs_clicked").text(memoryGame.movesCount);
     $("#pairs_guessed").text(memoryGame.guessedPairsCount);
   }
@@ -90,7 +89,7 @@ $(document).ready(function() {
 
   function setupNewGame() {
     turnCardsBack();
-    updateText();
+    updateScore();
   }
 
   function turnFaceDown(jQueryCardElement) {
